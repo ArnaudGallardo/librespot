@@ -16,6 +16,7 @@ where
     R: Read + Seek,
 {
     pub fn new(input: R) -> Result<VorbisDecoder<R>, VorbisError> {
+        info!("Vorbis")
         Ok(VorbisDecoder(vorbis::Decoder::new(input)?))
     }
 

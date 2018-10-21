@@ -379,7 +379,12 @@ impl PlayerInternal {
                             *x = (*x as f32 * normalisation_factor) as i16;
                         }
                     }
-
+                    // ICI : &packet.data() à envoyer dans python via un fichier ?
+                    let s: i16 = 0;
+                    for x in packet.data_mut().iter_mut() {
+                        s = s + (*x) as i16;
+                    }
+                    println!(s);
                     if let Err(err) = self.sink.write(&packet.data()) {
                         error!("Could not write audio: {}", err);
                         self.stop_sink();
