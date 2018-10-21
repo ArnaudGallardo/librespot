@@ -20,6 +20,9 @@ use audio_backend::Sink;
 use metadata::{FileFormat, Metadata, Track};
 use mixer::AudioFilter;
 
+use std::fs::OpenOptions;
+use std::io::prelude::*;
+
 pub struct Player {
     commands: Option<std::sync::mpsc::Sender<PlayerCommand>>,
     thread_handle: Option<thread::JoinHandle<()>>,
@@ -381,9 +384,17 @@ impl PlayerInternal {
                     }
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
+                    let mut file = OpenOptions::new()
+                        .write(true)
+                        .append(true)
+                        .open("audio.raw")
+                        .unwrap();
                     for x in packet.data().iter() {
                         //s = s + (*x) as i16;
-                        println!("{}",*x);
+                        //println!("{}",*x);
+                        if let Err(e) = writeln!(file, "{}",*x) {
+                            eprintln!("Couldn't write to file: {}", e);
+                        }
                     }
                     if let Err(err) = self.sink.write(&packet.data()) {
                         error!("Could not write audio: {}", err);
