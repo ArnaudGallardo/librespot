@@ -377,10 +377,20 @@ impl PlayerInternal {
                         editor.modify_stream(&mut packet.data_mut())
                     };
 
+                    let mut amp : f32 = 0.0;
+
                     if self.config.normalisation && normalisation_factor != 1.0 {
                         for x in packet.data_mut().iter_mut() {
                             *x = (*x as f32 * normalisation_factor) as i16;
+                            amp += ((*x).abs() as f32) / (i16::max_value() as f32);
                         }
+                        amp /= packet.data().len() as f32;
+                    }
+                    else {
+                        for x in packet.data().iter() {
+                            amp += ((*x).abs() as f32) / (i16::max_value() as f32);
+                        }
+                        amp /= packet.data().len() as f32;
                     }
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
@@ -389,12 +399,8 @@ impl PlayerInternal {
                         .append(true)
                         .open("audio.raw")
                         .unwrap();
-                    for x in packet.data().iter() {
-                        //s = s + (*x) as i16;
-                        //println!("{}",*x);
-                        if let Err(e) = writeln!(file, "{}",*x) {
-                            eprintln!("Couldn't write to file: {}", e);
-                        }
+                    if let Err(e) = writeln!(file, "{}",amp) {
+                        eprintln!("Couldn't write to file: {}", e);
                     }
                     if let Err(err) = self.sink.write(&packet.data()) {
                         error!("Could not write audio: {}", err);
