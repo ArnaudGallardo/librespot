@@ -15,7 +15,7 @@ where
     R: Read + Seek,
 {
     pub fn new(input: R) -> Result<VorbisDecoder<R>, VorbisError> {
-        info!("Lewton")
+        info!("Lewton");
         Ok(VorbisDecoder(OggStreamReader::new(input)?))
     }
 
