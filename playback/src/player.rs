@@ -380,11 +380,11 @@ impl PlayerInternal {
                         }
                     }
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
-                    let mut s: i16 = 0;
-                    for x in packet.data_mut().iter_mut() {
-                        s = s + (*x) as i16;
+                    //let mut s: i16 = 0;
+                    for x in packet.data().iter() {
+                        //s = s + (*x) as i16;
+                        println!("{}",*x);
                     }
-                    println!("{}",s);
                     if let Err(err) = self.sink.write(&packet.data()) {
                         error!("Could not write audio: {}", err);
                         self.stop_sink();
