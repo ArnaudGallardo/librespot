@@ -23,6 +23,9 @@ use mixer::AudioFilter;
 use std::fs::OpenOptions;
 use std::io::prelude::*;
 
+use std::io::BufWriter;
+use std::net::TcpStream;
+
 pub struct Player {
     commands: Option<std::sync::mpsc::Sender<PlayerCommand>>,
     thread_handle: Option<thread::JoinHandle<()>>,
@@ -38,6 +41,7 @@ struct PlayerInternal {
     sink_running: bool,
     audio_filter: Option<Box<AudioFilter + Send>>,
     event_sender: futures::sync::mpsc::UnboundedSender<PlayerEvent>,
+    sndbuf: BufWriter,
 }
 
 enum PlayerCommand {
@@ -137,6 +141,7 @@ impl Player {
                 sink_running: false,
                 audio_filter: audio_filter,
                 event_sender: event_sender,
+                sndbuf: BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap()),
             };
 
             internal.run();
