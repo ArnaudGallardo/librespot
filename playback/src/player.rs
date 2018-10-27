@@ -140,7 +140,7 @@ impl Player {
                 sink_running: false,
                 audio_filter: audio_filter,
                 event_sender: event_sender,
-                sndbuf: BufWriter::new(TcpStream::connect("127.0.0.1:34254").unwrap()),
+                sndbuf: BufWriter::new(TcpStream::connect("192.168.1.18:34254").unwrap()),
             };
 
             internal.run();
