@@ -393,7 +393,7 @@ impl PlayerInternal {
                     //}
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
-                    self.sndbuf.write(packet.data()).unwrap();
+                    self.sndbuf.write(as_bytes(packet.data())).unwrap();
                 }
             }
 
