@@ -1,4 +1,4 @@
-use byteorder::{LittleEndian, ReadBytesExt};
+use byteorder::{LittleEndian, ReadBytesExt, ByteOrder};
 use futures;
 use futures::sync::oneshot;
 use futures::{future, Future};
@@ -392,7 +392,10 @@ impl PlayerInternal {
                     //}
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
-                    self.sndbuf.write((&packet.data()).read_u8::<LittleEndian>().unwrap()).unwrap();
+
+                    let mut bytes = [0; 8];
+                    LittleEndian::write_i16_into(&packet.data(), &mut bytes);
+                    self.sndbuf.write(bytes).unwrap();
                 }
             }
 
