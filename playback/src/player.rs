@@ -388,11 +388,12 @@ impl PlayerInternal {
                         }
                     }
 
-                    for x in packet.data().iter() {
-                        self.sndbuf.write(x).unwrap();
-                    }
+                    //for x in packet.data().iter() {
+                    //    amp += ((*x).abs() as f32) / (i16::max_value() as f32);
+                    //}
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
+                    self.sndbuf.write(packet.data()).unwrap();
                 }
             }
 
