@@ -393,7 +393,7 @@ impl PlayerInternal {
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
 
-                    let mut bytes;
+                    let mut bytes = [0; 2*packet.data().len()];
                     LittleEndian::write_i16_into(&packet.data(), &mut bytes);
                     self.sndbuf.write(&bytes).unwrap();
                 }
