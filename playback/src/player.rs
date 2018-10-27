@@ -20,13 +20,10 @@ use audio_backend::Sink;
 use metadata::{FileFormat, Metadata, Track};
 use mixer::AudioFilter;
 
-use std::fs::OpenOptions;
 use std::io::prelude::*;
 
 use std::io::BufWriter;
 use std::net::TcpStream;
-use std::io::Cursor;
-use byteorder::{BigEndian, ReadBytesExt};
 
 pub struct Player {
     commands: Option<std::sync::mpsc::Sender<PlayerCommand>>,
@@ -395,7 +392,7 @@ impl PlayerInternal {
                     //}
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
-                    self.sndbuf.write(packet.data().read_u8::<BigEndian>().unwrap()).unwrap();
+                    self.sndbuf.write(packet.read_u8::<LittleEndian>().unwrap()).unwrap();
                 }
             }
 
