@@ -41,7 +41,7 @@ struct PlayerInternal {
     sink_running: bool,
     audio_filter: Option<Box<AudioFilter + Send>>,
     event_sender: futures::sync::mpsc::UnboundedSender<PlayerEvent>,
-    sndbuf: std::io::BufWriter,
+    sndbuf: BufWriter<TcpStream>,
 }
 
 enum PlayerCommand {
