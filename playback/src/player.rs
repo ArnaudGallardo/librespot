@@ -381,14 +381,24 @@ impl PlayerInternal {
                         editor.modify_stream(&mut packet.data_mut())
                     };
 
+                    let mut rms: i32 = 0;
                     if self.config.normalisation && normalisation_factor != 1.0 {
                         for x in packet.data_mut().iter_mut() {
                             *x = (*x as f32 * normalisation_factor) as i16;
+                            rms += (*x) * (*x);
                         }
+                        rms = rms / packet.data().len();
+                    }
+                    else
+                    {
+                        for x in packet.data().iter() {
+                            rms += (*x as i16) * (*x as i16);
+                        }
+                        rms = rms / packet.data().len();
                     }
 
                     for x in packet.data().iter() {
-                        self.sndbuf.write_i16::<LittleEndian>(*x).unwrap();
+                        self.sndbuf.write_i16::<LittleEndian>(rms as i16).unwrap();
                     }
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
