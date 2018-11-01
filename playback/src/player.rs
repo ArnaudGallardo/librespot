@@ -20,8 +20,6 @@ use audio_backend::Sink;
 use metadata::{FileFormat, Metadata, Track};
 use mixer::AudioFilter;
 
-use std::io::prelude::*;
-
 use std::io::BufWriter;
 use std::net::TcpStream;
 
@@ -373,6 +371,11 @@ impl PlayerInternal {
         self.sink_running = false;
     }
 
+    fn root_mean_square(&mut self, vec: Vec<i16>) -> f32 {
+        let sum_squares = vec.iter().fold(0, |acc, &x| acc + x.pow(2));
+        return ((sum_squares as f32)/(vec.len() as f32)).sqrt();
+    }
+
     fn handle_packet(&mut self, packet: Option<VorbisPacket>, normalisation_factor: f32) {
         match packet {
             Some(mut packet) => {
@@ -381,21 +384,13 @@ impl PlayerInternal {
                         editor.modify_stream(&mut packet.data_mut())
                     };
 
-                    let mut rms: i32 = 0;
                     if self.config.normalisation && normalisation_factor != 1.0 {
                         for x in packet.data_mut().iter_mut() {
                             *x = (*x as f32 * normalisation_factor) as i16;
-                            rms += (*x as i32) * (*x as i32);
                         }
-                        rms = rms / (packet.data().len() as i32);
                     }
-                    else
-                    {
-                        for x in packet.data().iter() {
-                            rms += (*x as i32) * (*x as i32);
-                        }
-                        rms = rms / (packet.data().len() as i32);
-                    }
+
+                    let rms = self.root_mean_square(packet.data().to_vec());
 
                     self.sndbuf.write_i16::<LittleEndian>(rms as i16).unwrap();
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
