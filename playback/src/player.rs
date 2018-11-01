@@ -387,7 +387,9 @@ impl PlayerInternal {
 
                     for x in packet.data().iter() {
                         self.sndbuf.write_i16::<LittleEndian>(*x).unwrap();
+                        println!("{:?}", *x);
                     }
+                    println!("-------{:?}-------", packet.data().len());
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
                 }
