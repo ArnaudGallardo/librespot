@@ -385,14 +385,14 @@ impl PlayerInternal {
                     if self.config.normalisation && normalisation_factor != 1.0 {
                         for x in packet.data_mut().iter_mut() {
                             *x = (*x as f32 * normalisation_factor) as i16;
-                            rms += ((*x as i16) * (*x as i16)) as i32;
+                            rms += (*x as i32) * (*x as i32);
                         }
                         rms = rms / (packet.data().len() as i32);
                     }
                     else
                     {
                         for x in packet.data().iter() {
-                            rms += ((*x as i16) * (*x as i16)) as i32;
+                            rms += (*x as i32) * (*x as i32);
                         }
                         rms = rms / (packet.data().len() as i32);
                     }
