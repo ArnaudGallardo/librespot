@@ -371,11 +371,6 @@ impl PlayerInternal {
         self.sink_running = false;
     }
 
-    fn root_mean_square(&mut self, vec: Vec<i16>) -> f32 {
-        let sum_squares = vec.iter().fold(0, |acc, &x| acc + x.pow(2));
-        return ((sum_squares as f32)/(vec.len() as f32)).sqrt();
-    }
-
     fn handle_packet(&mut self, packet: Option<VorbisPacket>, normalisation_factor: f32) {
         match packet {
             Some(mut packet) => {
@@ -390,9 +385,9 @@ impl PlayerInternal {
                         }
                     }
 
-                    let rms = self.root_mean_square(packet.data().to_vec());
-
-                    self.sndbuf.write_i16::<LittleEndian>(rms as i16).unwrap();
+                    for x in packet.data().iter() {
+                        self.sndbuf.write_i16::<LittleEndian>(*x).unwrap();
+                    }
                     // ICI : &packet.data() à envoyer dans python via un fichier ?
                     //let mut s: i16 = 0;
                 }
